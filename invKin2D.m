@@ -62,6 +62,8 @@ function [theta, f_val, B] = broydenIter(l, theta, pos, B)
 	theta = theta + delta_theta;
 
 	% recalculate f(x)
-	y = getEFPosition2D(l, theta) - calc_pos;	% f(theta + delta_theta) - f(theta)
-	B = B + ((y - B*delta_theta)* delta_theta') / (delta_theta' * delta_theta);
+	y = getEFPosition2D(l, theta) - pos;	% f(theta + delta_theta) - f(theta)
+%	B = B + ((y - B*delta_theta)* delta_theta') / (delta_theta' * delta_theta);
+	B = B + (y - f_val - B*delta_theta) / dot(delta_theta, delta_theta)*delta_theta.';
+	f_val = y;
 end
