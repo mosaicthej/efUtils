@@ -63,7 +63,9 @@ function [theta, f_val, B] = broydenIter(l, theta, pos, B)
 
 	% recalculate f(x)
 	y = getEFPosition2D(l, theta) - pos;	% f(theta + delta_theta) - f(theta)
-%	B = B + ((y - B*delta_theta)* delta_theta') / (delta_theta' * delta_theta);
+
+	% I still don't understand why won't this work
+	%	B = B + ((y - B*delta_theta)* delta_theta') / (delta_theta' * delta_theta);
 	denom = delta_theta' * delta_theta;
 	if abs(denom) >= 1e-12
 		B = B + (y - f_val - B*delta_theta) /denom *delta_theta.';
