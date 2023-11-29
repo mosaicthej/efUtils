@@ -23,7 +23,7 @@ for i = 1:itr
     % Jac = Jac+(Fx-Fx0-Jac*dX)/dot(dX,dX)*dX.'; %Jacobian Broyden
     % instead, try with my solution to see if it works
     %	B = B + ((y - B*delta_theta)* delta_theta') / (delta_theta' * delta_theta);
-    Jac = Jac+((Fx-Fx0-Jac*dx)* dx')/(dx'*dx);
+    Jac = Jac+((Fx-Fx0-Jac*dX)* dX')/(dX'*dX);
     Fx0 = Fx;
 end
 %Illustration___________________________________________________________
