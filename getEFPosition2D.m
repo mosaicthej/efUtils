@@ -1,7 +1,7 @@
-% those are local functions that are used only in this file
-% use the given formulas:
-% f1(𝜃1, 𝜃2) = l1 cos(𝜃1) + l2 cos(𝜃1 + 𝜃2) - x = 0,
-% f2(𝜃1, 𝜃2) = l1 sin(𝜃1) + l2 sin(𝜃1 + 𝜃2) - y = 0.
+%% those are local functions that are used only in this file
+%% use the given formulas:
+%% f1(𝜃1, 𝜃2) = l1 cos(𝜃1) + l2 cos(𝜃1 + 𝜃2) - x = 0,
+%% f2(𝜃1, 𝜃2) = l1 sin(𝜃1) + l2 sin(𝜃1 + 𝜃2) - y = 0.
 function pos = getEFPosition2D(l,theta)
 	l1 = l(1);
 	l2 = l(2);

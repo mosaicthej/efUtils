@@ -3,19 +3,21 @@ function theta = invKin2D(l, theta0, pos, n, mode)
 	theta = theta0;
 	threshold = 1e-3; % when pos_diff less than this, is converged.
 	dPos = [Inf;Inf];
-	k = 1
+	k = 0;
 	% choose the method
 	if mode == 1
 		% use Newton's method
 		while( k<n && norm(dPos)>threshold)
 			[theta, dPos] = newtonIter(l, theta, pos);
+			k=k+1;
 		end
 	elseif mode == 0
-		[current_pos, J] = evalRobot2D(l, theta);
+		[~, J] = evalRobot2D(l, theta);
 		B = J;	% initialize B to J, based on guess theta_0;
 		while( k<n && norm(dPos)>threshold)
 			[theta, dPos, B] = broydenIter(l, theta, pos, B);	
 			% update theta and B, recalculate the difference each iter.
+			k=k+1;
 		end
 	end
 	% check if the result converges
@@ -36,15 +38,15 @@ end
 %%	g'(x) == f'(x)
 %%	therefore we can use the same Jacobian.
 
-function [theta, diff] = newtonIter(l, theta, pos)
+function [theta, f_val] = newtonIter(l, theta, pos)
 %% use newton's method to find theta
 %% this only performs exactly 1 iteration.
 
 	% find the current position and J (derivative)
 	% based on the initial guess
 	[calc_pos, J] = evalRobot2D(l, theta);
-	diff = calc_pos - pos;
-	delta_theta = -J\diff;
+	f_val = calc_pos - pos;
+	delta_theta = -J\f_val;
 	theta = theta + delta_theta;
 end
 
@@ -62,19 +64,4 @@ function [theta, f_val, B] = broydenIter(l, theta, pos, B)
 	% recalculate f(x)
 	y = getEFPosition2D(l, theta) - calc_pos;	% f(theta + delta_theta) - f(theta)
 	B = B + ((y - B*delta_theta)* delta_theta') / (delta_theta' * delta_theta);
-end
-
-function pos = getEFPosition2D(l,theta)
-%% those are local functions that are used only in this file
-%% use the given formulas:
-%% f1(𝜃1, 𝜃2) = l1 cos(𝜃1) + l2 cos(𝜃1 + 𝜃2) - x = 0,
-%% f2(𝜃1, 𝜃2) = l1 sin(𝜃1) + l2 sin(𝜃1 + 𝜃2) - y = 0.
-	l1 = l(1);
-	l2 = l(2);
-	theta1 = theta(1);
-	theta2 = theta(2);
-    % evaluate the position of the end effector
-    x = cos(theta1) + l2 * cos(theta1 + theta2);
-    y = l1 * sin(theta1) + l2 * sin(theta1 + theta2);
-    pos = [x; y];
 end
