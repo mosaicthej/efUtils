@@ -2,7 +2,7 @@
 % make sure you define n and mode, the ones
 % below are for illustration
 n = 10;
-mode = 1;
+mode = 0; % 1 for Newton, 0 for Broyden
 
 ls=[0.5,0.5]';
 t=rand(2,1); %Choose some random starting point.
