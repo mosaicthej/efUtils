@@ -3,6 +3,12 @@
 % below are for illustration
 n = 10;
 mode = 0; % 1 for Newton, 0 for Broyden
+ms = "broyden";
+if mode==1
+	ms = "newton";
+end
+disp("mode is ");
+disp(ms);
 
 ls=[0.5,0.5]';
 t=rand(2,1); %Choose some random starting point.
@@ -21,6 +27,6 @@ while(1)
   
   %Solve and display the position
   t=invKin2D(ls,t,desired,n,mode); 
-  plotRobot2D(ls,t);
+  plotRobot2D(ls,t); 
   hold off;
 end
