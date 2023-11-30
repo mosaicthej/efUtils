@@ -1,9 +1,26 @@
 % Code 2-9 | Broyden Method
 clc; clear
-f = @(x) [x(1)^3+(x(1)^2)*x(2)-x(1)*x(3)+6;    %function
+fo = @(x) [x(1)^3+(x(1)^2)*x(2)-x(1)*x(3)+6;    %function
     exp(x(1))+exp(x(2))-x(3);
     x(2)^2-2*x(1)*x(3)-4];
-X = [-1; -2; 1];                               %satrt points
+Xo = [-1; -2; 1];                               %satrt points
+
+% try use:
+% f1(𝜃1, 𝜃2) = l1 cos(𝜃1) + l2 cos(𝜃1 + 𝜃2) - x = 0,
+% f2(𝜃1, 𝜃2) = l1 sin(𝜃1) + l2 sin(𝜃1 + 𝜃2) - y = 0.
+g = @(l, theta) [l(1)*cos(theta(1)) + l(2)*cos(theta(1) + theta(2));
+    l(1)*sin(theta(1)) + l(2)*sin(theta(1) + theta(2))];
+
+theta_0 = [0.1; 0.1];
+P = [0.7071; 1.7071]; l = [1; 1];
+X = theta_0 % initial guess and param
+% if g = [x; y], then
+% f = [g(1) - x; g(2) - y];
+% which meausres the residual based on the current guess of theta,
+% and it is the subject for optimization (minimize to zero);
+f = @(theta) [g(l, theta)(1) - P(1); g(l, theta)(2) - P(2)];
+% f = @(pos, l, theta) [l(1)*cos(theta(1)) + l(2)*cos(theta(1) + theta(2)) - pos(1);
+
 error = 1e-3;
 itr = 100;
 %Method_________________________________________________________________
