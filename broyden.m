@@ -11,14 +11,14 @@ Xo = [-1; -2; 1];                               %satrt points
 g = @(l, theta) [l(1)*cos(theta(1)) + l(2)*cos(theta(1) + theta(2));
     l(1)*sin(theta(1)) + l(2)*sin(theta(1) + theta(2))];
 
-theta_0 = [0.1; 0.1];
+theta_0 = [0.5; 0.5];
 P = [0.7071; 1.7071]; l = [1; 1];
 X = theta_0 % initial guess and param
 % if g = [x; y], then
 % f = [g(1) - x; g(2) - y];
 % which meausres the residual based on the current guess of theta,
 % and it is the subject for optimization (minimize to zero);
-f = @(theta) [g(l, theta)(1) - P(1); g(l, theta)(2) - P(2)];
+f = @(theta) g(l, theta) - P;
 % f = @(pos, l, theta) [l(1)*cos(theta(1)) + l(2)*cos(theta(1) + theta(2)) - pos(1);
 
 error = 1e-3;

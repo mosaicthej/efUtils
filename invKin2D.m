@@ -4,6 +4,11 @@ function theta = invKin2D(l, theta0, pos, n, mode)
 	threshold = 1e-3; % when pos_diff less than this, is converged.
 	dPos = [Inf;Inf];
 	k = 0;
+%% redefine f as the difference between guessed pos - pos
+	g = @(l, theta) [l(1)*cos(theta(1)) + l(2)*cos(theta(1) + theta(2));
+		    l(1)*sin(theta(1)) + l(2)*sin(theta(1) + theta(2))];
+
+	f = @(theta) g(l, theta) - pos;
 	% choose the method
 	if mode == 1
 		% use Newton's method
@@ -12,13 +17,18 @@ function theta = invKin2D(l, theta0, pos, n, mode)
 			k=k+1;
 		end
 	elseif mode == 0
-		[~, J] = evalRobot2D(l, theta);
-		B = J;	% initialize B to J, based on guess theta_0;
-		while( k<n && norm(dPos)>threshold)
-			[theta, dPos, B] = broydenIter(l, theta, pos, B);	
-			% update theta and B, recalculate the difference each iter.
-			k=k+1;
+		% initialize J, based on guess theta_0;
+		[~,J] = evalRobot2D(l, theta);
+		Fx0 = f(theta);
+		while(k<n && norm(Fx0)>threshold)
+			dTheta = -J\Fx0;
+			theta = theta + dTheta;
+			Fx = f(theta);
+			J = J + ((Fx-Fx0 - J*dTheta)*dTheta')/(dTheta' * dTheta);
+			Fx0 = Fx;
 		end
+		dPos = Fx0;
+
 	end
 	% check if the result converges
 	if norm(dPos) >= threshold
