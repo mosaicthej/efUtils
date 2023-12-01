@@ -1,17 +1,41 @@
 % Q2.1
 % a.
- l = [1;1];
+%l = [0.8;0.7];
 % theta = [any;pi/2;any];
-theta = [0;pi/2;0];
-figure
-plotRobot3D(l,theta)
+%theta = [0;pi/2;0];
+%figure
+%plotRobot3D(l,theta)
 % Now the elbow is at pi/2
 %
 % b.
 % theta = [pi/2;any;any];
-theta = [pi/2;0;0];
+%theta = [pi/2;0;0];
+%figure
+%plotRobot3D(l,theta)
+
+% Link lengths
+l = [0.8; 0.7];
+
+% Configuration A: Elbow at pi/2
+% theta = [any;pi/2;any];
+thetaA = [0, pi/2, 0];
 figure
-plotRobot3D(l,theta)
-% Now the whole arm is fully stretched upward in a straight line
-% The second one gives a singular Jacobian matrix. Since?
-% 
+plotRobot3D(l,thetaA)
+JA = evalRobot3D(l, thetaA);
+condJA = cond(JA); % Condition number of Jacobian in Configuration A
+% plotRobot3D(l, thetaA); % Uncomment to visualize
+
+% Configuration B: Arm Fully Stretched Upward
+% theta = [pi/2;any;any];
+thetaB = [pi/2, 0, 0];
+figure
+plotRobot3D(l,thetaB)
+JB = evalRobot3D(l, thetaB);
+condJB = cond(JB); % Condition number of Jacobian in Configuration B
+% plotRobot3D(l, thetaB); % Uncomment to visualize
+
+% Display condition numbers as comments
+fprintf('Condition number for Configuration A: %f\n', condJA);
+fprintf('Condition number for Configuration B: %f\n', condJB);
+% Condition number for Configuration A is 2.491491
+% Condition number for Configuration B is Inf
