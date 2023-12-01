@@ -45,7 +45,7 @@ J - J_n
 %	any formulas for calculation, whereas with analytic derivative,
 %	the derivatives needs to be calculated for each formula.
 
-% Q1.3
+% 
 % Q1.4
 % Newton's method generally converges faster than Broyden's method.
 % Broyden's method is easier to implement when the derivative of the function is unknown or difficult to compute.
