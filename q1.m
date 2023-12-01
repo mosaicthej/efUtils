@@ -46,4 +46,12 @@ J - J_n
 %	the derivatives needs to be calculated for each formula.
 
 % Q1.3
+% Q1.4
+% Newton's method generally converges faster than Broyden's method.
+% Broyden's method is easier to implement when the derivative of the function is unknown or difficult to compute.
+% Broyden's method is more computationally efficient, especially for complex functions where calculating derivatives is costly.
+% Newton's method can be more sensitive to the initial guess and may fail to converge in some cases, 
+% especially in the presence of discontinuities or non-smooth functions.
+
+
 
