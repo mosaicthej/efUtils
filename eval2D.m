@@ -2,7 +2,7 @@
 % make sure you define n and mode, the ones
 % below are for illustration
 n = 10;
-mode = 1; % 1 for Newton, 0 for Broyden
+mode = 0; % 1 for Newton, 0 for Broyden
 ms = "broyden";
 if mode==1
 	ms = "newton";

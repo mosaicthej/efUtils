@@ -20,12 +20,13 @@ function theta = invKin2D(l, theta0, pos, n, mode)
 		% initialize J, based on guess theta_0;
 		[~,J] = evalRobot2D(l, theta);
 		Fx0 = f(theta);
-		while(k<n && abs(norm(Fx0))>threshold)
+		while(k<n && norm(Fx0)>threshold)
 			dTheta = -J\Fx0;
 			theta = theta + dTheta;
 			Fx = f(theta);
 			J = J + ((Fx-Fx0 - J*dTheta)*dTheta')/(dTheta' * dTheta);
 			Fx0 = Fx;
+			k = k+1;
             k=k+1;
 		end
 		dPos = Fx0;
