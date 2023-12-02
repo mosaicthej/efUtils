@@ -26,6 +26,8 @@ function theta = invKin2D(l, theta0, pos, n, mode)
 			Fx = f(theta);
 			J = J + ((Fx-Fx0 - J*dTheta)*dTheta')/(dTheta' * dTheta);
 			Fx0 = Fx;
+<<<<<<< HEAD
+			k = k+1;
             k=k+1;
 
 		end
