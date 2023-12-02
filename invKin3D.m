@@ -14,12 +14,12 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 	if mode == 1
 		% use Newton's method
 		while( k<n && norm(dPos)>threshold)
-			[theta, dPos] = newtonIter(l, theta, pos);
+			[theta, dPos] = newtonIter(l, theta, desired);
 			k=k+1;
 		end
 	elseif mode == 0
 		% initialize J, based on guess theta_0;
-		[pos,J] = evalRobot3D(l, theta);
+		[pos,B] = evalRobot3D(l, theta);
 		Fx0 = pos - desired;
 		while(k<n && abs(norm(Fx0))>threshold)
 			dTheta = -B\Fx0;
@@ -56,31 +56,10 @@ function [theta, f_val] = newtonIter(l, theta, pos)
 
 	% find the current position and J (derivative)
 	% based on the initial guess
-	[calc_pos, J] = evalRobot2D(l, theta);
+	[calc_pos, J] = evalRobot3D(l, theta);
 	f_val = calc_pos - pos;
 	delta_theta = -J\f_val;
 	theta = theta + delta_theta;
 end
 
-function [theta, f_val, B] = broydenIter(l, theta, pos, B)
-%% use Broyden's method to find theta
-%% only perfomrs 1 iteration
 
-	calc_pos = getEFPosition2D(l, theta);
-	f_val = calc_pos - pos; % this is the value from f(x_0),
-	% for which we are looking for x that f(x) = 0;
-	% solve for step using current B;
-	delta_theta = -B\f_val;
-	theta = theta + delta_theta;
-
-	% recalculate f(x)
-	y = getEFPosition2D(l, theta) - pos;	% f(theta + delta_theta) - f(theta)
-
-	% I still don't understand why won't this work
-	%	B = B + ((y - B*delta_theta)* delta_theta') / (delta_theta' * delta_theta);
-	denom = delta_theta' * delta_theta;
-	if abs(denom) >= 1e-12
-		B = B + (y - f_val - B*delta_theta) /denom *delta_theta.';
-	end
-	f_val = y;
-end
