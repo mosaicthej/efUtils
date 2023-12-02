@@ -1,6 +1,4 @@
-%function [pos,J] = evalRobot3D(l,theta)
-
-function J = evalRobot3D(l,theta)
+function [pos,J] = evalRobot3D(l,theta)
 %Calculating the positon of the end effector
 x=(l(1)*cos(theta(1)) + l(2)*cos(theta(1)+theta(2)))*cos(theta(3));
 y=(l(1)*cos(theta(1)) + l(2)*cos(theta(1)+theta(2)))*sin(theta(3));

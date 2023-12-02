@@ -1,30 +1,31 @@
-function theta = invKin2D(l, theta0, pos, n, mode)
+function theta = invKin3D(l, theta0, desired, n, mode)
 	% initialize variables
 	theta = theta0;
 	threshold = 1e-3; % when pos_diff less than this, is converged.
-	dPos = [Inf;Inf];
+	dPos = [Inf; Inf; Inf]; % Initialize position difference
 	k = 0;
 %% redefine f as the difference between guessed pos - pos
-	g = @(l, theta) [l(1)*cos(theta(1)) + l(2)*cos(theta(1) + theta(2));
-		    l(1)*sin(theta(1)) + l(2)*sin(theta(1) + theta(2))];
+	% Define the function for forward kinematics
+    g = @(theta) evalRobot3D(l, theta);
 
-	f = @(theta) g(l, theta) - pos;
+    % Define the error function as the difference between current and desired positions
+    f = @(theta) g(theta) - desired;
 	% choose the method
 	if mode == 1
 		% use Newton's method
 		while( k<n && norm(dPos)>threshold)
-			[theta, dPos] = newtonIter(l, theta, desired);
-            k = k + 1;
-        end
+			[theta, dPos] = newtonIter(l, theta, pos);
+			k=k+1;
+		end
 	elseif mode == 0
 		% initialize J, based on guess theta_0;
-		[~,J] = evalRobot2D(l, theta);
-		Fx0 = f(theta);
+		[pos,J] = evalRobot3D(l, theta);
+		Fx0 = pos - desired;
 		while(k<n && abs(norm(Fx0))>threshold)
-			dTheta = -J\Fx0;
+			dTheta = -B\Fx0;
 			theta = theta + dTheta;
 			Fx = f(theta);
-			J = J + ((Fx-Fx0 - J*dTheta)*dTheta')/(dTheta' * dTheta);
+			B = B + ((Fx-Fx0 - B*dTheta)*dTheta')/(dTheta' * dTheta);
 			Fx0 = Fx;
             k=k+1;
 		end
