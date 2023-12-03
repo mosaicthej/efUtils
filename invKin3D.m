@@ -1,4 +1,5 @@
 function theta = invKin3D(l, theta0, desired, n, mode)
+
 	% initialize variables
 	theta = theta0;
 	threshold = 1e-3; % when pos_diff less than this, is converged.
@@ -6,10 +7,15 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 	k = 0;
 %% redefine f as the difference between guessed pos - pos
 	% Define the function for forward kinematics
-    g = @(theta) evalRobot3D(l, theta);
+	g = @(l, theta) [
+	  (l(1)*cos(theta(1)) + l(2)*cos(theta(1)+theta(2)))*cos(theta(3));
+	  (l(1)*cos(theta(1)) + l(2)*cos(theta(1)+theta(2)))*sin(theta(3));
+	  l(1)*sin(theta(1)) + l(2)*sin(theta(1)+theta(2))
+	];
 
-    % Define the error function as the difference between current and desired positions
-    f = @(theta) g(theta) - desired;
+	% Define the error function as the difference between 
+	% current and desired positions
+	f = @(theta) g(l, theta) - desired;
 	% choose the method
 	if mode == 1
 		% use Newton's method
@@ -27,14 +33,15 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 			Fx = f(theta);
 			B = B + ((Fx-Fx0 - B*dTheta)*dTheta')/(dTheta' * dTheta);
 			Fx0 = Fx;
-            k=k+1;
+			
+			k=k+1;
 		end
 		dPos = Fx0;
 
 	end
 	% check if the result converges
 	if norm(dPos) >= threshold
-		warning('invKin2D did not converge below threshold of %f after %d iterations', threshold, n);
+		warning('invKin3D did not converge below threshold of %f after %d iterations', threshold, n);
 	end
 end
 
