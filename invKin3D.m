@@ -1,4 +1,32 @@
 function theta = invKin3D(l, theta0, desired, n, mode)
+%% Based on the Jacobian, it is known that when theta2=0,
+%%	i.e., the arms in a straight line, then det(J)=0
+%%	and therefore the matrix is singular.
+%%	For such cases, there would be no point of using
+%%	Newton or Broyden, rather, calculate the angles 
+%%	analytically instead.
+
+	if abs(norm(desired) - sum(l)) < 1e-6
+		% target is on the sphere formed by two arms
+		% in this case, arms are straight and J singular.
+			
+		% when theta2 = 0:
+		% x = (l1+l2) cos(t1)cos(t3);
+		% y = (l1+l2) cos(t1)sin(t3);
+		% z = (l1+l2) sin(t1);
+
+		% y/x = sin(t3)/cos(t3) = tan(t3);
+		% hence t3 = atan(y/x) = atan2(y,x)
+		% use atan2 as it preserves the quadrant information
+		t3 = atan2(desired(2), desired(1));
+
+		% x^2 + y^2 = ( (l1+l2) cos(t1) )^2 * 1
+		% norm([x1,x2]) = (l1+l2) cos(t1);
+		% and since z=(l1+l2) sin(t1);
+		% therefore t1 = atan2(z, norm([x1, x2));
+		t1 = atan2(desired(3), sqrt(desired(1)^2 + desired(2)^2));
+
+	end
 
 	% initialize variables
 	theta = theta0;
