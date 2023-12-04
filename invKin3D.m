@@ -31,6 +31,13 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 		return;
 	end
 
+	if norm(desired) > sum(l)
+		fprintf("aborted since the arm can't reach here, too far\n");
+		return;
+	end
+
+
+
 	% initialize variables
 	theta = theta0;
 	threshold = 1e-3; % when pos_diff less than this, is converged.
@@ -73,8 +80,8 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 	% check if the result converges
 	if norm(dPos) >= threshold
 		warning('invKin3D did not converge below threshold of %f after %d iterations.\n there is still a difference of %f', threshold, n, norm(dPos));
-		
 	end
+	fprintf("done with %d iters\n",k);
 end
 
 %% note:
@@ -93,13 +100,44 @@ function [theta, f_val] = newtonIter(l, theta, pos)
 %% use newton's method to find theta
 %% this only performs exactly 1 iteration.
 
+%% testing to not use evalRobot3D
+
+
 	% find the current position and J (derivative)
 	% based on the initial guess
 	[calc_pos, J] = evalRobot3D(l, theta);
-	calc_pos = calc_pos';
+
+%	calc_pos = getEFPosition3D(l, theta);
+%	J = getJacob(l,theta,1e-3);
+	if isrow(calc_pos)
+		calc_pos = calc_pos';
+	end
+	if isrow(pos)
+		pos = pos';
+	end
 	f_val = calc_pos - pos;
 	delta_theta = -J\f_val;
+	%fprintf("delta_theta is"); disp(delta_theta');
 	theta = theta + delta_theta;
 end
 
+function pos = getEFPosition3D(l, theta)
+	pos= [	  (l(1)*cos(theta(1)) + l(2)*cos(theta(1)+theta(2)))*cos(theta(3));
+	  (l(1)*cos(theta(1)) + l(2)*cos(theta(1)+theta(2)))*sin(theta(3));
+	  l(1)*sin(theta(1)) + l(2)*sin(theta(1)+theta(2))
+	];
+end
 
+function J = getJacob(l,theta, h)
+	n=3;m=3;
+
+	j=zeros(n,m);
+	for i=1:m
+		dx=zeros(n,1);
+		dx(i)=h;
+		y_plus=getEFPosition3D(l,theta+dx);
+		y_minus=getEFPosition3D(l,theta-dx);
+		
+		J(:,i)=(y_plus-y_minus)/(2*h);
+	end
+end
