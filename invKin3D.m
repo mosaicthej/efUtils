@@ -1,4 +1,7 @@
 function theta = invKin3D(l, theta0, desired, n, mode)
+	if isrow(l) l=l';end
+	if isrow(theta0) theta0=theta0'; end
+	if isrow(desired) desired=desired'; end
 %% Based on the Jacobian, it is known that when theta2=0,
 %%	i.e., the arms in a straight line, then det(J)=0
 %%	and therefore the matrix is singular.
