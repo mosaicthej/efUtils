@@ -35,11 +35,49 @@ steps = 6;
 %%%        plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
 %%%        drawnow();
 %%% Make sure you update the obj_picked and obj_placed properly
+% ... (rest of the eval3D.m script above)
 
 %%%%%%% Enter your code here    %%%%%%%%%%%%%%%%%%%%%
+for can_idx = 1:n_cans
+    % Pick up can from the table
+    for segment = 1:steps
+        clf; hold on;
+        desired = bezier(start_can_pos(can_idx, :), [0 0.3 0.2], steps, segment);
+        t = invKin3D(ls, theta0, desired, n, mode);
+        [pos_hand, J] = evalRobot3D(ls, t); 
+        plotCylinderWithCaps(0.1, pos_hand, 0.2, 12, [1 0 0], 'z');
+        plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
+        drawnow();
+    end
+    obj_picked = obj_picked + 1;
+    
+    % Place can on the conveyor belt
+    for segment = 1:steps
+        clf; hold on;
+        desired = bezier([0 0.3 0.2], end_can_pos(can_idx, :), steps, segment);
+        t = invKin3D(ls, theta0, desired, n, mode);
+        [pos_hand, J] = evalRobot3D(ls, t); 
+        if segment == steps % Only plot can on end effector at the last segment
+            plotCylinderWithCaps(0.1, pos_hand, 0.2, 12, [1 0 0], 'z');
+        end
+        plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
+        drawnow();
+    end
+    obj_placed = obj_placed + 1;
+end
 
-
-
+% Provide explanation for what happens if Newton's method stops converging
+% and potential strategies for dealing with targets far from the end effector
+% in the comments within the code.
+%
+% For example:
+% If Newton's method fails to converge, this could be due to the target point being
+% outside the manipulator's reachable workspace or near a singularity where small
+% changes in joint angles result in large end effector movements. One strategy to
+% handle this issue is to implement a fallback method, such as moving the target
+% point closer to the workspace boundary or using a different set of joint angles
+% as the initial guess. Additionally, path planning with intermediate waypoints
+% can help navigate around singularities and unreachable areas.
 
 %%%%%%%%%~~~~~END~~~~~~%%%%%%%%%%%%%%%%%%%
         %When moving from table to converyor, plot can at the end of arm
