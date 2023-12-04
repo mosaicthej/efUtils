@@ -7,6 +7,7 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 %%	analytically instead.
 
 	if abs(norm(desired) - sum(l)) < 1e-6
+		fprintf("near zero angle for theta2\n");
 		% target is on the sphere formed by two arms
 		% in this case, arms are straight and J singular.
 			
@@ -26,6 +27,8 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 		% therefore t1 = atan2(z, norm([x1, x2));
 		t1 = atan2(desired(3), sqrt(desired(1)^2 + desired(2)^2));
 
+		theta = [t1;0;t3];
+		return;
 	end
 
 	% initialize variables
@@ -69,7 +72,8 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 	end
 	% check if the result converges
 	if norm(dPos) >= threshold
-		warning('invKin3D did not converge below threshold of %f after %d iterations', threshold, n);
+		warning('invKin3D did not converge below threshold of %f after %d iterations.\n there is still a difference of %f', threshold, n, norm(dPos));
+		
 	end
 end
 
