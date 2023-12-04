@@ -42,6 +42,8 @@ steps = 6;
 mid_point_table = [0 0.5 0.8]; % Ensure this point is reachable and above the table
 mid_point_conveyor = [-0.8 -0.5 1]; % Ensure this point is reachable and above the conveyor
 
+
+can_attached = false;
 % Iterate over each can to move from the table to the conveyor belt
 for can_idx = 1:n_cans
     % Pick up can from the table
@@ -56,8 +58,11 @@ for can_idx = 1:n_cans
         drawnow();
         % Update theta0 for the next iteration to use the current position
         theta0 = t;
+	if ~can_attached
+		obj_picked = obj_picked +1;
+		can_attached = true;
+	end
     end
-    obj_picked = obj_picked + 1;
     
     % Place can on the conveyor belt
     for segment = 1:steps
@@ -73,6 +78,7 @@ for can_idx = 1:n_cans
         theta0 = t;
     end
     obj_placed = obj_placed + 1;
+    can_attached = false;
     
     % Return arm to starting position (optional)
     for segment = 1:steps
