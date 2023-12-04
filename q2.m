@@ -8,7 +8,7 @@
 % Now the elbow is at pi/2
 %
 % b.
-% theta = [pi/2;any;any];
+% theta = [pi/2;0;any];
 %theta = [pi/2;0;0];
 %figure
 %plotRobot3D(l,theta)
@@ -24,7 +24,7 @@ plotRobot3D(l,thetaA)
 [posA, JA] = evalRobot3D(l, thetaA);
 
 condJA = cond(JA); % Condition number of Jacobian in Configuration A
-% plotRobot3D(l, thetaA); % Uncomment to visualize
+ plotRobot3D(l, thetaA); % Uncomment to visualize
 
 % Configuration B: Arm Fully Stretched Upward
 % thetaB = [pi/2;0;any];
@@ -33,7 +33,7 @@ figure
 plotRobot3D(l,thetaB)
 [posB, JB] = evalRobot3D(l, thetaB);
 condJB = cond(JB); % Condition number of Jacobian in Configuration B
-% plotRobot3D(l, thetaB); % Uncomment to visualize
+ plotRobot3D(l, thetaB); % Uncomment to visualize
 
 % Display condition numbers as comments
 fprintf('Condition number for Configuration A: %f\n', condJA);
@@ -49,5 +49,3 @@ thetaC = [pi/2, 0, pi/2];
 condJC = cond(JC);
 fprintf('Condition number for Configuration B with diff rotational-angle: %f\n', condJC);
 
-
-% Q2.2
