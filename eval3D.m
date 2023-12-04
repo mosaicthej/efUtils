@@ -7,7 +7,7 @@ clf;
 
 ls=[0.8,0.7]';
 theta0=[3*pi/4, pi/2, pi]; %Choose some random starting point.
-n=10;
+n=100;
 mode = 1;
 %Start position
 desired=[-0.2, -0.2, 0.5];
@@ -38,32 +38,53 @@ steps = 6;
 % ... (rest of the eval3D.m script above)
 
 %%%%%%% Enter your code here    %%%%%%%%%%%%%%%%%%%%%
+% Define midpoints above the table within reach
+mid_point_table = [0 0.5 0.8]; % Ensure this point is reachable and above the table
+mid_point_conveyor = [-0.8 -0.5 1]; % Ensure this point is reachable and above the conveyor
+
+% Iterate over each can to move from the table to the conveyor belt
 for can_idx = 1:n_cans
     % Pick up can from the table
     for segment = 1:steps
         clf; hold on;
-        desired = bezier(start_can_pos(can_idx, :), [0 0.3 0.2], steps, segment);
+        % Move from table to midpoint above table
+        desired = bezier(start_can_pos(can_idx, :), mid_point_table, steps, segment);
         t = invKin3D(ls, theta0, desired, n, mode);
         [pos_hand, J] = evalRobot3D(ls, t); 
         plotCylinderWithCaps(0.1, pos_hand, 0.2, 12, [1 0 0], 'z');
         plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
         drawnow();
+        % Update theta0 for the next iteration to use the current position
+        theta0 = t;
     end
     obj_picked = obj_picked + 1;
     
     % Place can on the conveyor belt
     for segment = 1:steps
         clf; hold on;
-        desired = bezier([0 0.3 0.2], end_can_pos(can_idx, :), steps, segment);
+        % Move from midpoint above table to conveyor belt
+        desired = bezier(mid_point_table, end_can_pos(can_idx, :), steps, segment);
         t = invKin3D(ls, theta0, desired, n, mode);
         [pos_hand, J] = evalRobot3D(ls, t); 
-        if segment == steps % Only plot can on end effector at the last segment
-            plotCylinderWithCaps(0.1, pos_hand, 0.2, 12, [1 0 0], 'z');
-        end
+        plotCylinderWithCaps(0.1, pos_hand, 0.2, 12, [1 0 0], 'z');
         plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
         drawnow();
+        % Update theta0 for the next iteration to use the current position
+        theta0 = t;
     end
     obj_placed = obj_placed + 1;
+    
+    % Return arm to starting position (optional)
+    for segment = 1:steps
+        clf; hold on;
+        % Move from conveyor midpoint back to the starting position above the table
+        desired = bezier(mid_point_conveyor, mid_point_table, steps, segment);
+        t = invKin3D(ls, theta0, desired, n, mode);
+        plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
+        drawnow();
+        % Update theta0 for the next iteration to use the current position
+        theta0 = t;
+    end
 end
 
 % Provide explanation for what happens if Newton's method stops converging
