@@ -118,8 +118,8 @@ direct_fail = error_norm > 1e-3;
 % plan a path with intermediate points to guide the solution.
 % This approach can avoid configurations that result in a singular Jacobian
 % and can be more likely to find a valid solution to the inverse kinematics.
+direct_fail = true; % force to test Bezier
 if direct_fail
-%if true
 % it failed because the initial guess is too far compares to the solution
 % therefore Newton's method failed to converge.
 % in this case, newton failed to converge to opposite target.
