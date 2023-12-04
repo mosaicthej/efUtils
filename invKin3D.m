@@ -96,6 +96,7 @@ function [theta, f_val] = newtonIter(l, theta, pos)
 	% find the current position and J (derivative)
 	% based on the initial guess
 	[calc_pos, J] = evalRobot3D(l, theta);
+	calc_pos = calc_pos';
 	f_val = calc_pos - pos;
 	delta_theta = -J\f_val;
 	theta = theta + delta_theta;
