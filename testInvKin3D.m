@@ -3,6 +3,9 @@ l = [0.5; 0.5]; % For example, two links of length 1
 
 theta_test = [pi/2;pi/4;pi/3];
 target = evalRobot3D(l,theta_test);
+if isrow(target)
+	target = target';
+end
 % Define a target point near the end effector, use expected from theta. 
 
 % Initial guess for the joint angles theta0
@@ -14,11 +17,13 @@ n_iterations = 1000;
 mode = 1; % Newton's method
 % initially test if the Newton puts to the correct theta
 theta = invKin3D(l, theta0, target, n_iterations, mode);
-calc_pos = evalRobot3D(l,theta);
+calc_pos = evalRobot3D(l,theta); 
+if isrow(target) target=target'; end
 fprintf("difference between calculated theta and expected is \n");
 disp(calc_pos - target);
 
-%% 2.a
+%% Q2.2.a.1
+%% Testing when position is linearly increasing.
 % Check convergence for a point moving away from the end effector
 disp('Testing convergence as the target moves away:');
 dist = 1;
@@ -29,6 +34,7 @@ while norm(target*dist)<= sum(l) % Increase the distance from 1 to 2 in steps of
     theta = invKin3D(l, theta0, scaled_target, n_iterations, mode);
     % Check if the algorithm converged
     [pos, ~] = evalRobot3D(l, theta);
+    if isrow(pos) pos=pos'; end
     error_norm = norm(pos - scaled_target);
     fprintf('Distance: %f, Error norm: %f\n', dist, error_norm);
     if error_norm > 1e-3
@@ -41,7 +47,8 @@ while norm(target*dist)<= sum(l) % Increase the distance from 1 to 2 in steps of
 	dist=dist+0.01;
 end
 
-%% 2.a
+%% Q2.2.a.2
+%% Testing when angles are moving away...
 % Check convergence for a point moving away from the end effector
 disp('Testing convergence as the target moves away:');
 converged=true;
@@ -62,12 +69,13 @@ while (i<pi && converged)
 		while (k<pi && converged)
 			target_theta=[i;j;k];
 			[target_pos, ~] = evalRobot3D(l, target_theta);
+			if isrow(target_pos) target_pos=target_pos';end
 			calc_theta=invKin3D(l, theta0, target_pos, n_iterations, mode); % finding the theta
 			[calc_pos, ~] = evalRobot3D(l, calc_theta);
+			if isrow(calc_pos) calc_pos=calc_pos';end
 			error_norm = norm(target_pos-calc_pos);
 			fprintf('angles: %f %f %f, Error norm: %f\n', i, j, k, error_norm);
 			if (error_norm > 1e-3) || (isnan(error_norm))
-%% Q2.2.a
 				% now, Newton's method stopped converging.
 				% because the initial guess is too far away from the actual angle.
 				% or could also be that Jacobian becomes singular during the calculation.
@@ -96,11 +104,13 @@ end
 %% Q2.2.c
 % Now, choose a target point in the diametrically opposite quadrant
 theta0 = [pi/2;pi/3;pi];
-target = evalRobot3D(l, theta0)
+target = evalRobot3D(l, theta0);
+if isrow(target) target=target'; end
 opposite_target = [-target(1); -target(2); -target(3)];
 disp('Trying to reach a point in the opposite quadrant:');
 theta = invKin3D(l, theta0, opposite_target, n_iterations, mode);
 [pos, ~] = evalRobot3D(l, theta);
+if isrow(pos) pos=pos'; end
 error_norm = norm(pos - opposite_target);
 fprintf('Opposite target Error norm: %f\n', error_norm);
 direct_fail = error_norm > 1e-3;
@@ -116,6 +126,7 @@ if direct_fail
 	disp("Direct attempt failed to converge, Plan a path with Bezier");
 	% define start and end points
 	pos_start = evalRobot3D(l, theta0);
+	if isrow(pos_start) pos_start=pos_start'; end
 	pos_end = opposite_target;
 	
 	% define control points for Bezier
@@ -137,6 +148,7 @@ if direct_fail
 		intermediate_target = bezier_path(:,i);
 		theta = invKin3D(l, theta, intermediate_target, n_iterations, mode);
 		[pos,~] = evalRobot3D(l, theta);
+		if isrow(pos) pos=pos'; end
 		error_norm = norm(pos-intermediate_target);
 
 		% check if intermediate solution is successful;

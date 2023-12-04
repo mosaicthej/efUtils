@@ -22,6 +22,7 @@ thetaA = [0, pi/2, 0];
 figure
 plotRobot3D(l,thetaA)
 [posA, JA] = evalRobot3D(l, thetaA);
+
 condJA = cond(JA); % Condition number of Jacobian in Configuration A
 % plotRobot3D(l, thetaA); % Uncomment to visualize
 

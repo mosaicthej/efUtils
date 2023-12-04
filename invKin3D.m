@@ -64,6 +64,9 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 	elseif mode == 0
 		% initialize J, based on guess theta_0;
 		[pos,B] = evalRobot3D(l, theta);
+		if isrow(pos)
+			pos = pos';
+		end
 		Fx0 = pos - desired;
 		while(k<n && abs(norm(Fx0))>threshold)
 			dTheta = -B\Fx0;
@@ -107,14 +110,15 @@ function [theta, f_val] = newtonIter(l, theta, pos)
 	% based on the initial guess
 	[calc_pos, J] = evalRobot3D(l, theta);
 
-%	calc_pos = getEFPosition3D(l, theta);
-%	J = getJacob(l,theta,1e-3);
 	if isrow(calc_pos)
 		calc_pos = calc_pos';
 	end
 	if isrow(pos)
 		pos = pos';
 	end
+%	calc_pos = getEFPosition3D(l, theta);
+%	J = getJacob(l,theta,1e-3);
+
 	f_val = calc_pos - pos;
 	delta_theta = -J\f_val;
 	%fprintf("delta_theta is"); disp(delta_theta');
