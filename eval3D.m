@@ -24,7 +24,7 @@ obj_picked = 0;
 obj_placed = 0;
 in_hand = 0;
 deliver = 0;
-steps = 20;
+steps = 6;
 %%%%            Instructions            %%%%%%%%%%%%%%
 %%% Keep in mind the following lines of codes
 %%% Use 'clf; hold on;' at the beginning of your primary loop
@@ -47,6 +47,7 @@ can_attached = false;
 % Iterate over each can to move from the table to the conveyor belt
 for can_idx = 1:n_cans
     % Pick up can from the table
+    % table -> table_mid
     for segment = 1:steps
         clf; hold on;
         % Move from table to midpoint above table
@@ -58,14 +59,20 @@ for can_idx = 1:n_cans
         drawnow();
         % Update theta0 for the next iteration to use the current position
         theta0 = t;
-	    if ~can_attached
-		    obj_picked = obj_picked +1;
-		    can_attached = true;
-	    end
+
+	if ~can_attached 
+		% this block will only execute 1 time
+		% that is when the EF touches the can.
+		% now the can will be drawn with the arm,
+		% so no need to draw it on table.
+		obj_picked = obj_picked +1; % remove this can from table
+		can_attached = true;
+	end
     end
     theta0=[pi/2, pi/2, pi/2]; 
     
     % Place can on the conveyor belt
+    % table_mid -> end
     for segment = 1:steps
         clf; hold on;
         % Move from midpoint above table to conveyor belt
@@ -79,9 +86,10 @@ for can_idx = 1:n_cans
         theta0 = t;
     end
     theta0=[pi/2, pi/2, pi/2]; 
+	
 
-    obj_placed = obj_placed + 1;
-    can_attached = false;
+    obj_placed = obj_placed + 1; % place the can on belt
+    can_attached = false; % can is not with EF anymore.
     
     % Return arm to starting position (optional)
     for segment = 1:steps
@@ -113,7 +121,7 @@ end
 % Provide explanation for what happens if Newton's method stops converging
 % and potential strategies for dealing with targets far from the end effector
 % in the comments within the code.
-%
+% 
 % For example:
 % If Newton's method fails to converge, this could be due to the target point being
 % outside the manipulator's reachable workspace or near a singularity where small
@@ -124,8 +132,6 @@ end
 % can help navigate around singularities and unreachable areas.
 
 %%%%%%%%%~~~~~END~~~~~~%%%%%%%%%%%%%%%%%%%
-        %When moving from table to converyor, plot can at the end of arm
-
 
 function desired = bezier(start_pos, end_pos, steps, curr_segment)
     %The trajectory smoothly varies between:
