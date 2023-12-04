@@ -6,7 +6,7 @@ clf;
 
 
 ls=[0.8,0.7]';
-theta0=[3*pi/4, pi/2, pi]; %Choose some random starting point.
+theta0=[pi/2, pi/2, pi/2]; %Choose some random starting point.
 n=100;
 mode = 1;
 %Start position
@@ -24,7 +24,7 @@ obj_picked = 0;
 obj_placed = 0;
 in_hand = 0;
 deliver = 0;
-steps = 6;
+steps = 10;
 %%%%            Instructions            %%%%%%%%%%%%%%
 %%% Keep in mind the following lines of codes
 %%% Use 'clf; hold on;' at the beginning of your primary loop
@@ -40,7 +40,7 @@ steps = 6;
 %%%%%%% Enter your code here    %%%%%%%%%%%%%%%%%%%%%
 % Define midpoints above the table within reach
 mid_point_table = [0 0.5 0.8]; % Ensure this point is reachable and above the table
-mid_point_conveyor = [-0.8 -0.5 1]; % Ensure this point is reachable and above the conveyor
+mid_point_conveyor = [-0.2 -0.5 0.8]; % Ensure this point is reachable and above the conveyor
 
 
 can_attached = false;
@@ -84,6 +84,18 @@ for can_idx = 1:n_cans
     for segment = 1:steps
         clf; hold on;
         % Move from conveyor midpoint back to the starting position above the table
+        desired = bezier(end_can_pos(can_idx,:), mid_point_conveyor, steps, segment);
+        t = invKin3D(ls, theta0, desired, n, mode);
+        plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
+        drawnow();
+        % Update theta0 for the next iteration to use the current position
+        theta0 = t;
+    end
+ 
+    % Return arm to starting position (optional)
+    for segment = 1:steps
+        clf; hold on;
+        % Move from conveyor midpoint back to the starting position above the table
         desired = bezier(mid_point_conveyor, mid_point_table, steps, segment);
         t = invKin3D(ls, theta0, desired, n, mode);
         plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
@@ -91,6 +103,7 @@ for can_idx = 1:n_cans
         % Update theta0 for the next iteration to use the current position
         theta0 = t;
     end
+    theta0=[pi/2, pi/2, pi/2]; 
 end
 
 % Provide explanation for what happens if Newton's method stops converging
