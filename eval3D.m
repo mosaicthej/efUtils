@@ -24,7 +24,7 @@ obj_picked = 0;
 obj_placed = 0;
 in_hand = 0;
 deliver = 0;
-steps = 10;
+steps = 20;
 %%%%            Instructions            %%%%%%%%%%%%%%
 %%% Keep in mind the following lines of codes
 %%% Use 'clf; hold on;' at the beginning of your primary loop
@@ -58,11 +58,12 @@ for can_idx = 1:n_cans
         drawnow();
         % Update theta0 for the next iteration to use the current position
         theta0 = t;
-	if ~can_attached
-		obj_picked = obj_picked +1;
-		can_attached = true;
-	end
+	    if ~can_attached
+		    obj_picked = obj_picked +1;
+		    can_attached = true;
+	    end
     end
+    theta0=[pi/2, pi/2, pi/2]; 
     
     % Place can on the conveyor belt
     for segment = 1:steps
@@ -77,6 +78,8 @@ for can_idx = 1:n_cans
         % Update theta0 for the next iteration to use the current position
         theta0 = t;
     end
+    theta0=[pi/2, pi/2, pi/2]; 
+
     obj_placed = obj_placed + 1;
     can_attached = false;
     
@@ -91,12 +94,13 @@ for can_idx = 1:n_cans
         % Update theta0 for the next iteration to use the current position
         theta0 = t;
     end
+    theta0=[pi/2, pi/2, pi/2]; 
  
     % Return arm to starting position (optional)
     for segment = 1:steps
         clf; hold on;
         % Move from conveyor midpoint back to the starting position above the table
-        desired = bezier(mid_point_conveyor, mid_point_table, steps, segment);
+        desired = bezier(mid_point_conveyor, start_can_pos(can_idx, :), steps, segment);
         t = invKin3D(ls, theta0, desired, n, mode);
         plot_scene(obj_picked, obj_placed, start_can_pos, end_can_pos, gca, ls, t);
         drawnow();
