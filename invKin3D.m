@@ -36,6 +36,8 @@ function theta = invKin3D(l, theta0, desired, n, mode)
 
 	if norm(desired) > sum(l)
 		fprintf("aborted since the arm can't reach here, too far\n");
+        fprintf("requested position is: ");
+        disp(desired');
 		return;
 	end
 
