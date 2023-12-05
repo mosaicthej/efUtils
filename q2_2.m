@@ -1,3 +1,4 @@
+fprintf("\n\nQ2.2");
 % Define the lengths of the manipulator's links
 l = [0.5; 0.5]; % For example, two links of length 1
 
@@ -22,6 +23,7 @@ if isrow(calc_pos) calc_pos=calc_pos'; end
 fprintf("difference between calculated theta and expected is \n");
 disp(calc_pos - target);
 
+fprintf("\n\nQ2.2.a.1");
 %% Q2.2.a.1
 %% Testing when position is linearly increasing.
 % Check convergence for a point moving away from the end effector
@@ -47,6 +49,7 @@ while norm(target*dist)<= sum(l) % Increase the distance from 1 to 2 in steps of
 	dist=dist+0.01;
 end
 
+fprintf("\n\nQ2.2.a.2");
 %% Q2.2.a.2
 %% Testing when angles are moving away...
 % Check convergence for a point moving away from the end effector
@@ -101,6 +104,7 @@ end
 % - This incremental approach can help to avoid singularities and ensure
 %   a smoother transition between configurations.
 
+fprintf("\n\nQ2.2.c");
 %% Q2.2.c
 % Now, choose a target point in the diametrically opposite quadrant
 theta0 = [pi/2;pi/3;pi];
