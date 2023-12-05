@@ -18,7 +18,7 @@ mode = 1; % Newton's method
 % initially test if the Newton puts to the correct theta
 theta = invKin3D(l, theta0, target, n_iterations, mode);
 calc_pos = evalRobot3D(l,theta); 
-if isrow(target) target=target'; end
+if isrow(calc_pos) calc_pos=calc_pos'; end
 fprintf("difference between calculated theta and expected is \n");
 disp(calc_pos - target);
 
